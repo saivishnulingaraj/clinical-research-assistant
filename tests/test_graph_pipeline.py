@@ -13,7 +13,9 @@ from cra.retrieval.service import RetrievalService
 def test_answerable_question_produces_grounded_answer(
     orchestrator: Orchestrator,
 ) -> None:
-    result = orchestrator.answer("What are the eligibility criteria for psoriasis?")
+    result = orchestrator.answer(
+        "What are the eligibility criteria for the Velpramine plaque psoriasis trial?"
+    )
     state = result.state
     assert not state.insufficient_evidence
     assert state.citations

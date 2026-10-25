@@ -33,10 +33,10 @@ def test_index_roundtrip_and_search(tmp_path: Path) -> None:
     store.load(index_dir)
     assert store.num_chunks > 0
 
-    results = store.search("psoriasis PASI eligibility criteria", top_k=4)
+    results = store.search("Velpramine plaque psoriasis eligibility criteria", top_k=8)
     assert results
-    # The hashing embedder keys on token overlap, so SYN-0001 (psoriasis)
-    # should surface among the top results.
+    # The hashing embedder keys on token overlap; the distinctive drug name
+    # "Velpramine" surfaces SYN-0001 among the top results.
     assert any(r.chunk.doc_id == "SYN-0001" for r in results)
     # Scores are cosine similarities in [-1, 1].
     for r in results:

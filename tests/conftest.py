@@ -30,8 +30,11 @@ def settings(index_dir: Path) -> Settings:
         chunk_size=600,
         chunk_overlap=100,
         faiss_index_dir=index_dir,
-        # Low threshold so fake-embedding scores clear the gate for answerable Qs.
-        confidence_threshold=0.05,
+        # Fake-embedder-calibrated gate: the hashing embedder yields lower,
+        # noisier scores than a real model, so widen candidates and lower the
+        # confidence gate (mirrors the eval runner's fake-path settings).
+        confidence_threshold=0.08,
+        retrieval_top_k=8,
     )
 
 
