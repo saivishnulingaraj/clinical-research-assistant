@@ -1,0 +1,22 @@
+# Local development compose file.
+# Brings up the API. The FAISS index is mounted from the host so you can run
+# ingestion once and reuse the index across container restarts.
+services:
+  api:
+    build: .
+    image: clinical-research-assistant:latest
+    ports:
+      - "8000:8000"
+    environment:
+      # Default to the fake LLM so the container starts without AWS creds.
+      # Override with CRA_LLM_PROVIDER=bedrock and real AWS env vars to use Nova Pro.
+      CRA_LLM_PROVIDER: ${CRA_LLM_PROVIDER:-fake}
+      CRA_BEDROCK_MODEL_ID: ${CRA_BEDROCK_MODEL_ID:-amazon.nova-pro-v1:0}
+      CRA_AWS_REGION: ${CRA_AWS_REGION:-us-east-1}
+      CRA_FAISS_INDEX_DIR: /app/data/index
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-}
+      AWS_SESSION_TOKEN: ${AWS_SESSION_TOKEN:-}
+    volumes:
+      - ./data:/app/data
+    restart: unless-stopped

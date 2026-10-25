@@ -1,0 +1,67 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "clinical-research-assistant"
+version = "0.1.0"
+description = "Agentic RAG service answering questions about public clinical-research documents with cited evidence."
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "MIT" }
+authors = [{ name = "clinical-research-assistant" }]
+keywords = ["rag", "langgraph", "fastapi", "bedrock", "clinical-trials"]
+
+dependencies = [
+    "fastapi>=0.111",
+    "uvicorn[standard]>=0.30",
+    "pydantic>=2.7",
+    "pydantic-settings>=2.3",
+    "langgraph>=0.2.0",
+    "langchain-core>=0.3.0",
+    "langchain-aws>=0.2.0",
+    "sentence-transformers>=3.0.0",
+    "faiss-cpu>=1.8.0",
+    "numpy>=1.26",
+    "httpx>=0.27",
+    "python-json-logger>=2.0.7",
+    "pyyaml>=6.0",
+    "tenacity>=8.4.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.2",
+    "pytest-cov>=5.0",
+    "ruff>=0.5.0",
+    "httpx>=0.27",
+]
+
+[project.scripts]
+cra-ingest = "cra.ingest.cli:main"
+cra-eval = "cra.__main__:eval_entrypoint"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/cra"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "W", "B", "UP", "C4", "SIM"]
+ignore = ["B008"]  # FastAPI uses function calls in defaults (Depends)
+
+[tool.ruff.lint.isort]
+known-first-party = ["cra"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+pythonpath = ["src"]
+filterwarnings = ["ignore::DeprecationWarning"]
+
+[tool.coverage.run]
+source = ["src/cra"]
+branch = true
