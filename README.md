@@ -73,7 +73,21 @@ cp .env.example .env
 #   CRA_BEDROCK_MODEL_ID=amazon.nova-pro-v1:0
 #   CRA_AWS_REGION=us-east-1
 # plus standard AWS credentials in your environment/profile.
+#
+# Or any OpenAI-compatible provider (AshnaAI, OpenRouter, Groq, Together, ...):
+#   CRA_LLM_PROVIDER=openai_compatible
+#   CRA_OPENAI_BASE_URL=https://api.ashna.ai/v1/api
+#   CRA_OPENAI_MODEL=<foundation model id or custom agent id>
+#   CRA_OPENAI_API_KEY=<your key>   # set only in local .env, never commit
 ```
+
+### LLM backends
+
+| `CRA_LLM_PROVIDER` | Backend | Needs |
+|---|---|---|
+| `fake` (default) | Deterministic offline stub | nothing |
+| `bedrock` | Amazon Nova Pro | AWS creds + model access |
+| `openai_compatible` | Any OpenAI Chat Completions API (AshnaAI, OpenRouter, Groq, Together, local vLLM/Ollama) | base URL + API key + model id |
 
 > **Secrets**: never commit `.env`. The model ID and region are read from env
 > vars and are never hard-coded. See `.env.example` for all `CRA_*` settings.
