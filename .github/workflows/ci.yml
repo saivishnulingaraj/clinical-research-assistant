@@ -15,7 +15,7 @@ env:
 
 jobs:
   lint-test:
-    name: Lint & test
+    name: Lint, test & eval
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -39,3 +39,23 @@ jobs:
 
       - name: Pytest (LLM mocked)
         run: pytest
+
+      - name: Eval (fake LLM) — fails PR if metrics drop below thresholds
+        run: python -m cra.evals.runner --golden evals/golden_set.jsonl
+
+      - name: Upload eval report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: eval-report
+          path: evals/reports/latest.md
+          if-no-files-found: ignore
+
+  docker-build:
+    name: Docker build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Build image
+        run: docker build -t clinical-research-assistant:ci .

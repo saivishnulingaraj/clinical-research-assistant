@@ -42,13 +42,21 @@ class HashingEmbedder:
     def __init__(self, dim: int = 256) -> None:
         self.dim = dim
 
+    def _hash_feature(self, vec: np.ndarray, feature: str, weight: float) -> None:
+        h = int(hashlib.md5(feature.encode()).hexdigest(), 16)
+        idx = h % self.dim
+        sign = 1.0 if (h >> 8) % 2 == 0 else -1.0
+        vec[idx] += sign * weight
+
     def _embed_one(self, text: str) -> np.ndarray:
         vec = np.zeros(self.dim, dtype=np.float32)
-        for tok in _TOKEN_RE.findall(text.lower()):
-            h = int(hashlib.md5(tok.encode()).hexdigest(), 16)
-            idx = h % self.dim
-            sign = 1.0 if (h >> 8) % 2 == 0 else -1.0
-            vec[idx] += sign
+        toks = _TOKEN_RE.findall(text.lower())
+        for tok in toks:
+            self._hash_feature(vec, tok, 1.0)
+        # Add token bigrams so multi-word terms (e.g. "primary endpoint",
+        # "eligibility criteria") contribute a stronger, more specific signal.
+        for a, b in zip(toks, toks[1:], strict=False):
+            self._hash_feature(vec, f"{a}_{b}", 1.5)
         return vec
 
     def embed(self, texts: list[str]) -> np.ndarray:
