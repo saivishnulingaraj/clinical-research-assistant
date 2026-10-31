@@ -45,6 +45,17 @@ class Settings(BaseSettings):
     price_per_1k_input_usd: float = Field(default=0.0008)
     price_per_1k_output_usd: float = Field(default=0.0032)
 
+    # ---- OpenAI-compatible provider -------------------------------------
+    # Used when llm_provider == "openai_compatible". Works with any backend
+    # exposing the OpenAI Chat Completions API (AshnaAI, OpenRouter, Groq,
+    # Together, a local vLLM/Ollama, etc.). Base URL, key, and model come from
+    # env; nothing is hard-coded. The API key must NEVER be committed.
+    openai_base_url: str = Field(default="https://api.openai.com/v1")
+    openai_api_key: str = Field(default="")
+    openai_model: str = Field(default="")
+    # Seconds to wait for the HTTP call before giving up.
+    openai_timeout_s: float = Field(default=60.0)
+
     # ---- LLM limits & caching -------------------------------------------
     max_llm_calls_per_request: int = Field(default=8)
     llm_cache_size: int = Field(default=256)

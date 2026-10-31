@@ -27,6 +27,19 @@ def build_backend(settings: Settings) -> BaseLLM:
             model_id=settings.bedrock_model_id,
             region=settings.aws_region,
         )
+    if provider == "openai_compatible":
+        # Any OpenAI Chat Completions-compatible endpoint (AshnaAI, OpenRouter,
+        # Groq, Together, local vLLM/Ollama, ...). Imported lazily.
+        from cra.llm.openai_compatible import OpenAICompatibleLLM
+
+        return OpenAICompatibleLLM(
+            temperature=settings.llm_temperature,
+            max_tokens=settings.llm_max_tokens,
+            base_url=settings.openai_base_url,
+            api_key=settings.openai_api_key,
+            model=settings.openai_model,
+            timeout_s=settings.openai_timeout_s,
+        )
     raise ValueError(f"unknown CRA_LLM_PROVIDER: {settings.llm_provider!r}")
 
 
